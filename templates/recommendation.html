@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Book Recommendation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <a href="{{ url_for('index') }}" class="back-button">← Back to Selection</a>
+        <div class="recommendation-card">
+            <h2>Book Recommendation</h2>
+            <p class="note">Based on your preferences, we recommend:</p>
+            <div class="book-card">
+                <h2>{{ recommendation.title }}</h2>
+                <p class="author">by {{ recommendation.author }}</p>
+                <p class="genre">Rating: {{ recommendation.rating }}</p>
+                <p class="description">{{ recommendation.synopsis }}</p>
+            </div>
+        </div>
+        <button class="refresh-button" onclick="refreshRecommendation()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+        </button>
+    </div>
+    <script>
+    function refreshRecommendation() {
+        const button = document.querySelector('.refresh-button');
+        button.classList.add('spinning');
+
+        // Update to use the new next-recommendation endpoint
+        fetch("{{ url_for('get_next_recommendation') }}", {
+            method: 'GET'
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.href = "{{ url_for('get_next_recommendation') }}";
+            } else {
+                // If we get a non-OK response (like when there are no more recommendations)
+                return response.text().then(text => {
+                    if (text.includes("No more recommendations")) {
+                        // Redirect to the index page if there are no more recommendations
+                        window.location.href = "{{ url_for('index') }}";
+                    }
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error refreshing recommendation:', error);
+            button.classList.remove('spinning');
+        });
+    }
+    </script>
+</body>
+</html>

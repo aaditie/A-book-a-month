@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Books by Theme</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Pick a few books you enjoyed, and we'll suggest the perfect follow-up!</h1>
+        <form action="{{ url_for('recommendation') }}" method="POST">
+            <div class="books-grid">
+                {% for book in books %}
+                    <div class="book-card">
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox"
+                                   name="selected_books"
+                                   value="{{ book.title }}"
+                                   class="custom-checkbox">
+                        </div>
+                        <h2>{{ book.title }}</h2>
+                        <p class="author">by {{ book.author }}</p>
+                        <p class="genre">Rating: {{ book.rating }}</p>
+                        <p class="description">Synopsis: {{ book.synopsis }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="submit-button">Get Book Recommendation</button>
+        </form>
+        <button class="refresh-button" onclick="refreshBooks()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+        </button>
+    </div>
+    <script>
+        function refreshBooks() {
+            const button = document.querySelector('.refresh-button');
+            const grid = document.querySelector('.books-grid');
+
+            button.classList.add('spinning');
+            grid.classList.add('refreshing');
+
+            // Refresh the page after animation
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
+
